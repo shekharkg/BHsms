@@ -8,7 +8,7 @@ public class SmsModel {
   private String _id;
   private String address;
   private String message;
-  private String readState;
+  private int readState;
   private long timeStamp;
   private int isInbox;
 
@@ -39,11 +39,11 @@ public class SmsModel {
     this.message = message;
   }
 
-  public String getReadState() {
+  public int getReadState() {
     return readState;
   }
 
-  public void setReadState(String readState) {
+  public void setReadState(int readState) {
     this.readState = readState;
   }
 

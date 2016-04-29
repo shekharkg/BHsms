@@ -36,7 +36,7 @@ public class StorageHelper extends SQLiteOpenHelper {
    */
   private final static String createTable = "Create TABLE " + tblMessage + " (" + colID
       + " INTEGER PRIMARY KEY AUTOINCREMENT, " + colMessageID + " TEXT, " + colAddress + " TEXT, "
-      + colMessage + " TEXT, " + colReadState + " TEXT, " + colTIMESTAMP + " TEXT, "
+      + colMessage + " TEXT, " + colReadState + " INTEGER, " + colTIMESTAMP + " TEXT, "
       + colIsInbox + " INTEGER);";
 
   /**
@@ -90,7 +90,7 @@ public class StorageHelper extends SQLiteOpenHelper {
       smsModel.set_id(c.getString(0));
       smsModel.setAddress(c.getString(1));
       smsModel.setMessage(c.getString(2));
-      smsModel.setReadState(c.getString(3));
+      smsModel.setReadState(c.getInt(3));
       smsModel.setTimeStamp(c.getLong(4));
       smsModel.setIsInbox(c.getInt(5));
       values.add(smsModel);

@@ -49,7 +49,7 @@ public class RetrieveSMS extends AsyncTask<Void, Void, List<SmsModel>> {
         smsModel.setAddress(c.getString(c
             .getColumnIndexOrThrow("address")));
         smsModel.setMessage(c.getString(c.getColumnIndexOrThrow("body")));
-        smsModel.setReadState(c.getString(c.getColumnIndex("read")));
+        smsModel.setReadState(c.getInt(c.getColumnIndex("read")));
         smsModel.setTimeStamp(timeStamp);
         if (c.getString(c.getColumnIndexOrThrow("type")).contains("1"))
           smsModel.setIsInbox(1);

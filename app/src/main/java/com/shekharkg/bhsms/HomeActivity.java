@@ -1,5 +1,9 @@
 package com.shekharkg.bhsms;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +25,10 @@ public class HomeActivity extends AppCompatActivity implements CallBack {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_home);
 
+    Log.e("smsModel", "e");
+    Log.i("smsModel", "i");
+    Log.d("smsModel", "d");
+
     storageHelper = StorageHelper.singleInstance(this);
     if (storageHelper.getFromPreference(this, "IS_FIRST_RUN") == 0 || storageHelper.getAllMessages().size() == 0) {
       new RetrieveSMS(this, this).execute();
@@ -28,6 +36,27 @@ public class HomeActivity extends AppCompatActivity implements CallBack {
     } else {
       logSms(storageHelper.getAllMessages());
     }
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    registerReceiver(broadcastReceiver, new IntentFilter("newMessageReceived"));
+  }
+
+  BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      Bundle b = intent.getExtras();
+      String smsModel = b.getString("smsModel");
+      Log.e("smsModel", smsModel);
+    }
+  };
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    unregisterReceiver(broadcastReceiver);
   }
 
   private void logSms(List<SmsModel> allMessages) {
