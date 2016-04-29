@@ -10,8 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.shekharkg.bhsms.adapter.ConversationAdapter;
 import com.shekharkg.bhsms.async.RetrieveSMS;
 import com.shekharkg.bhsms.bean.ConversationModel;
@@ -52,8 +52,40 @@ public class HomeActivity extends AppCompatActivity implements CallBack {
     @Override
     public void onReceive(Context context, Intent intent) {
       Bundle b = intent.getExtras();
-      String smsModel = b.getString("smsModel");
-      Log.e("smsModel", smsModel);
+      String smsDetails = b.getString("smsModel");
+      Log.e("smsModel", smsDetails);
+      SmsModel smsModel = new Gson().fromJson(smsDetails, SmsModel.class);
+      if (smsModel == null || smsModel.getAddress() == null)
+        return;
+
+      boolean isSenderAlreadyExists = false;
+
+      if (conversationAdapter != null) {
+        for (ConversationModel model : conversationAdapter.conversationModels) {
+          if (model.getAddress().equals(smsModel.getAddress())) {
+            model.setLastMessage(smsModel.getMessage());
+            model.setTimeStamp(smsModel.getTimeStamp());
+            model.setReadStatus(0);
+            model.setIsInbox(1);
+            conversationAdapter.conversationModels.remove(model);
+            conversationAdapter.conversationModels.add(0, model);
+            isSenderAlreadyExists = true;
+            break;
+          }
+        }
+        if (!isSenderAlreadyExists) {
+          ConversationModel conversationModel = new ConversationModel();
+          conversationModel.setAddress(smsModel.getAddress());
+          conversationModel.setLastMessage(smsModel.getMessage());
+          conversationModel.setTimeStamp(smsModel.getTimeStamp());
+          conversationModel.setIsInbox(1);
+          conversationModel.setReadStatus(0);
+          conversationAdapter.conversationModels.add(0, conversationModel);
+        }
+
+        conversationAdapter.notifyDataSetChanged();
+      } else
+        populateWithConversationList(storageHelper.getConversationList());
     }
   };
 
