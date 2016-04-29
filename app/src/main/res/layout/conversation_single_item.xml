@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackground"
+                android:orientation="vertical"
+                android:paddingBottom="10dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="10dp">
+
+  <TextView
+    android:id="@+id/addressTV"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:text="2372377321973917932179"
+    android:textColor="@color/title"
+    android:textSize="16dp"
+    android:textStyle="bold"/>
+
+  <TextView
+    android:id="@+id/messageTV"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/addressTV"
+    android:maxLines="2"
+    android:text="lksdjksjdkljsaldsabb,mnbm,nb,mnb,mnbm,nb,mnb,mnbl/kjlkj;lkjljl;kjl;kjlkm,nbmnb,mnb,mnb,mnb,mnb,mnbm,nbm,nb,mnb"/>
+
+  <TextView
+    android:id="@+id/timeStampTV"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toLeftOf="@+id/isRead"
+    android:layout_toStartOf="@+id/isRead"
+    android:maxLines="1"
+    android:text="lksdajlksadjlkdas.d"
+    android:textColor="@color/time_stamp"/>
+
+  <View
+    android:id="@+id/isRead"
+    android:layout_width="12dp"
+    android:layout_height="12dp"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentRight="true"
+    android:layout_margin="3dp"
+    android:background="@drawable/background_circular_blue"/>
+
+</RelativeLayout>

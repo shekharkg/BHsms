@@ -4,12 +4,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
-import com.shekharkg.bhsms.async.GetConversationList;
+import com.shekharkg.bhsms.adapter.ConversationAdapter;
 import com.shekharkg.bhsms.async.RetrieveSMS;
 import com.shekharkg.bhsms.bean.ConversationModel;
 import com.shekharkg.bhsms.bean.SmsModel;
@@ -21,18 +24,22 @@ import java.util.List;
 public class HomeActivity extends AppCompatActivity implements CallBack {
 
   private StorageHelper storageHelper;
+  private ListView conversationLV;
+  private ConversationAdapter conversationAdapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_home);
 
+    conversationLV = (ListView) findViewById(R.id.listView);
+
     storageHelper = StorageHelper.singleInstance(this);
-    if (storageHelper.getMessageCount() == 0) {
+    if (storageHelper.getMessageCount() == 0)
       new RetrieveSMS(this, this).execute();
-    } else {
-//      new GetConversationList(this, this);
-    }
+    else
+      populateWithConversationList(storageHelper.getConversationList());
+
   }
 
   @Override
@@ -65,13 +72,24 @@ public class HomeActivity extends AppCompatActivity implements CallBack {
 
   @Override
   public void OnInboxSuccessfullyRead(List<SmsModel> smsModels) {
-
+    populateWithConversationList(storageHelper.getConversationList());
   }
 
-  @Override
-  public void OnConversationListCreated(List<ConversationModel> conversationModels) {
+  public void populateWithConversationList(List<ConversationModel> conversationModels) {
+    findViewById(R.id.loader).setVisibility(View.GONE);
     if (conversationModels != null && conversationModels.size() > 0) {
-      //Populate list
-    }
+      conversationAdapter = new ConversationAdapter(this, conversationModels);
+      conversationLV.setAdapter(conversationAdapter);
+
+      conversationLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+          storageHelper.updateReadStatus(conversationAdapter.conversationModels.get(position).getAddress());
+          conversationAdapter.conversationModels.get(position).setReadStatus(1);
+          conversationAdapter.notifyDataSetChanged();
+        }
+      });
+    } else
+      findViewById(R.id.noSmsFoundTV).setVisibility(View.VISIBLE);
   }
 }

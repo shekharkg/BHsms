@@ -1,3 +1,4 @@
 <resources>
   <string name="app_name">BHsms</string>
+  <string name="desc_no_sms_found">No message found</string>
 </resources>
