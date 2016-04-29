@@ -1,5 +1,6 @@
 package com.shekharkg.bhsms.utils;
 
+import com.shekharkg.bhsms.bean.ConversationModel;
 import com.shekharkg.bhsms.bean.SmsModel;
 
 import java.util.List;
@@ -10,5 +11,7 @@ import java.util.List;
 public interface CallBack {
 
   void OnInboxSuccessfullyRead(List<SmsModel> smsModels);
+
+  void OnConversationListCreated(List<ConversationModel> conversationModels);
 
 }

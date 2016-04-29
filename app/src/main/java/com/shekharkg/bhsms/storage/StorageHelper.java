@@ -4,13 +4,17 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.shekharkg.bhsms.bean.ConversationModel;
 import com.shekharkg.bhsms.bean.SmsModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ShekharKG on 4/29/2016.
@@ -26,7 +30,7 @@ public class StorageHelper extends SQLiteOpenHelper {
   private static final String colAddress = "address";
   private static final String colMessage = "message";
   private static final String colReadState = "readState";
-  private static final String colTIMESTAMP = "timeStamp";
+  private static final String colTimeStamp = "timeStamp";
   private static final String colIsInbox = "isInbox";
 
   private SQLiteDatabase db;
@@ -36,7 +40,7 @@ public class StorageHelper extends SQLiteOpenHelper {
    */
   private final static String createTable = "Create TABLE " + tblMessage + " (" + colID
       + " INTEGER PRIMARY KEY AUTOINCREMENT, " + colMessageID + " TEXT, " + colAddress + " TEXT, "
-      + colMessage + " TEXT, " + colReadState + " INTEGER, " + colTIMESTAMP + " TEXT, "
+      + colMessage + " TEXT, " + colReadState + " INTEGER, " + colTimeStamp + " TEXT, "
       + colIsInbox + " INTEGER);";
 
   /**
@@ -78,11 +82,19 @@ public class StorageHelper extends SQLiteOpenHelper {
 
 
   /**
+   * Get sms count
+   */
+  public long getMessageCount() {
+    return DatabaseUtils.queryNumEntries(db, tblMessage);
+  }
+
+
+  /**
    * Select messages list from table
    */
   public List<SmsModel> getAllMessages() {
     Cursor c = db.query(tblMessage, new String[]{colMessageID, colAddress,
-            colMessage, colReadState, colTIMESTAMP, colIsInbox},
+            colMessage, colReadState, colTimeStamp, colIsInbox},
         null, null, null, null, null);
     List<SmsModel> values = new ArrayList<>();
     while (c.moveToNext()) {
@@ -100,11 +112,37 @@ public class StorageHelper extends SQLiteOpenHelper {
   }
 
   /**
+   * Get list of conversations
+   */
+  public List<ConversationModel> getConversationList() {
+    Cursor c = db.query(tblMessage, new String[]{colAddress, colMessage, colReadState, colIsInbox, colTimeStamp},
+        colIsInbox + " =?", new String[]{"1"},
+        null, null, colTimeStamp + " DESC");
+    List<ConversationModel> values = new ArrayList<>();
+    Map<String, ConversationModel> modelMap = new HashMap<>();
+    while (c.moveToNext()) {
+      ConversationModel conversationModel = new ConversationModel();
+      conversationModel.setAddress(c.getString(0));
+      conversationModel.setLastMessage(c.getString(1));
+      conversationModel.setReadStatus(c.getInt(2));
+      conversationModel.setIsInbox(c.getInt(3));
+      conversationModel.setTimeStamp(c.getLong(4));
+      if (!modelMap.containsKey(conversationModel.getAddress())) {
+        modelMap.put(conversationModel.getAddress(), conversationModel);
+        values.add(conversationModel);
+      }
+    }
+    modelMap = null;
+    c.close();
+    return values;
+  }
+
+  /**
    * Insert a message to table
    */
   public long addMessage(SmsModel smsModel) {
-    Cursor c = db.query(tblMessage, new String[]{colMessage, colAddress, colTIMESTAMP},
-        colAddress + " =? AND " + colTIMESTAMP + " =?",
+    Cursor c = db.query(tblMessage, new String[]{colMessage, colAddress, colTimeStamp},
+        colAddress + " =? AND " + colTimeStamp + " =?",
         new String[]{smsModel.getAddress(), String.valueOf(smsModel.getTimeStamp())},
         null, null, null);
 
@@ -119,9 +157,19 @@ public class StorageHelper extends SQLiteOpenHelper {
     contentValues.put(colAddress, smsModel.getAddress());
     contentValues.put(colMessage, smsModel.getMessage());
     contentValues.put(colReadState, smsModel.getReadState());
-    contentValues.put(colTIMESTAMP, smsModel.getTimeStamp());
+    contentValues.put(colTimeStamp, smsModel.getTimeStamp());
     contentValues.put(colIsInbox, smsModel.getIsInbox());
     return db.insert(tblMessage, null, contentValues);
+  }
+
+  /**
+   * Change status of unread message
+   */
+  public int updateReadStatus(String address) {
+    ContentValues contentValues = new ContentValues();
+    contentValues.put(colReadState, 1);
+    return db.update(tblMessage, contentValues, colAddress + " =? AND " + colReadState + " =?",
+        new String[]{address, "0"});
   }
 
   /**

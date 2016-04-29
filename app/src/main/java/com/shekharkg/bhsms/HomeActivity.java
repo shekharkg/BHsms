@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.shekharkg.bhsms.async.GetConversationList;
 import com.shekharkg.bhsms.async.RetrieveSMS;
+import com.shekharkg.bhsms.bean.ConversationModel;
 import com.shekharkg.bhsms.bean.SmsModel;
 import com.shekharkg.bhsms.storage.StorageHelper;
 import com.shekharkg.bhsms.utils.CallBack;
@@ -25,16 +27,11 @@ public class HomeActivity extends AppCompatActivity implements CallBack {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_home);
 
-    Log.e("smsModel", "e");
-    Log.i("smsModel", "i");
-    Log.d("smsModel", "d");
-
     storageHelper = StorageHelper.singleInstance(this);
-    if (storageHelper.getFromPreference(this, "IS_FIRST_RUN") == 0 || storageHelper.getAllMessages().size() == 0) {
+    if (storageHelper.getMessageCount() == 0) {
       new RetrieveSMS(this, this).execute();
-      storageHelper.saveInPreference(this, "IS_FIRST_RUN", 123);
     } else {
-      logSms(storageHelper.getAllMessages());
+//      new GetConversationList(this, this);
     }
   }
 
@@ -61,14 +58,20 @@ public class HomeActivity extends AppCompatActivity implements CallBack {
 
   private void logSms(List<SmsModel> allMessages) {
     for (SmsModel model : allMessages) {
-      Log.e("SMS", model.get_id() + ", From : " + model.getAddress() + ", Message : " + model.getMessage()
+      Log.i("SMS", model.get_id() + ", From : " + model.getAddress() + ", Message : " + model.getMessage()
           + ", Status : " + model.getReadState() + ", Time : " + model.getTimeStamp() + ", IsInbox : " + model.getIsInbox());
     }
-    Toast.makeText(this, "SUCCESS", Toast.LENGTH_SHORT).show();
   }
 
   @Override
   public void OnInboxSuccessfullyRead(List<SmsModel> smsModels) {
-    logSms(smsModels);
+
+  }
+
+  @Override
+  public void OnConversationListCreated(List<ConversationModel> conversationModels) {
+    if (conversationModels != null && conversationModels.size() > 0) {
+      //Populate list
+    }
   }
 }
