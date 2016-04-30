@@ -42,9 +42,10 @@ public class HomeActivity extends AppCompatActivity implements CallBack {
 
   }
 
+
   @Override
-  protected void onStart() {
-    super.onStart();
+  protected void onResume() {
+    super.onResume();
     registerReceiver(broadcastReceiver, new IntentFilter("newMessageReceived"));
   }
 
@@ -90,8 +91,8 @@ public class HomeActivity extends AppCompatActivity implements CallBack {
   };
 
   @Override
-  protected void onStop() {
-    super.onStop();
+  protected void onPause() {
+    super.onPause();
     unregisterReceiver(broadcastReceiver);
   }
 
@@ -119,9 +120,21 @@ public class HomeActivity extends AppCompatActivity implements CallBack {
           storageHelper.updateReadStatus(conversationAdapter.conversationModels.get(position).getAddress());
           conversationAdapter.conversationModels.get(position).setReadStatus(1);
           conversationAdapter.notifyDataSetChanged();
+
+          Intent intent = new Intent(HomeActivity.this, ChatActivity.class);
+          intent.putExtra("address", conversationAdapter.conversationModels.get(position).getAddress());
+          startActivity(intent);
+          overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
         }
       });
     } else
       findViewById(R.id.noSmsFoundTV).setVisibility(View.VISIBLE);
+  }
+
+  @Override
+  public void onBackPressed() {
+    super.onBackPressed();
+    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
   }
 }

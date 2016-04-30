@@ -92,10 +92,10 @@ public class StorageHelper extends SQLiteOpenHelper {
   /**
    * Select messages list from table
    */
-  public List<SmsModel> getAllMessages() {
+  public List<SmsModel> getAllMessages(String address) {
     Cursor c = db.query(tblMessage, new String[]{colMessageID, colAddress,
             colMessage, colReadState, colTimeStamp, colIsInbox},
-        null, null, null, null, null);
+        colAddress + " =?", new String[]{address}, null, null, colTimeStamp + " ASC");
     List<SmsModel> values = new ArrayList<>();
     while (c.moveToNext()) {
       SmsModel smsModel = new SmsModel();
@@ -116,8 +116,7 @@ public class StorageHelper extends SQLiteOpenHelper {
    */
   public List<ConversationModel> getConversationList() {
     Cursor c = db.query(tblMessage, new String[]{colAddress, colMessage, colReadState, colIsInbox, colTimeStamp},
-        colIsInbox + " =?", new String[]{"1"},
-        null, null, colTimeStamp + " DESC");
+        null, null, null, null, colTimeStamp + " DESC");
     List<ConversationModel> values = new ArrayList<>();
     Map<String, ConversationModel> modelMap = new HashMap<>();
     while (c.moveToNext()) {
@@ -128,7 +127,7 @@ public class StorageHelper extends SQLiteOpenHelper {
       conversationModel.setIsInbox(c.getInt(3));
       conversationModel.setTimeStamp(c.getLong(4));
       if (!modelMap.containsKey(conversationModel.getAddress())) {
-        modelMap.put(conversationModel.getAddress(), conversationModel);
+        modelMap.put(conversationModel.getAddress(), null);
         values.add(conversationModel);
       }
     }

@@ -12,13 +12,20 @@
     android:label="@string/app_name"
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
-    <activity android:name=".HomeActivity">
+    <activity
+      android:name=".HomeActivity"
+      android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+
+    <activity
+      android:name=".ChatActivity"
+      android:launchMode="singleTop"
+      android:screenOrientation="portrait"/>
 
 
     <receiver android:name=".broadcast.IncomingSms">
