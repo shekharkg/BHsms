@@ -62,11 +62,11 @@ public class ChatAdapter extends BaseAdapter {
     if (model.getIsInbox() == 1) {
       holder.sentLL.setVisibility(View.GONE);
       holder.rMessageTV.setText(model.getMessage());
-      holder.rTimeStamp.setText(Utils.getDate(model.getTimeStamp()));
+      holder.rTimeStamp.setText(Utils.getTimeDate(model.getTimeStamp()));
     } else {
       holder.receivedLL.setVisibility(View.GONE);
       holder.sMessageTV.setText(model.getMessage());
-      holder.sTimeStamp.setText(Utils.getDate(model.getTimeStamp()));
+      holder.sTimeStamp.setText(Utils.getTimeDate(model.getTimeStamp()));
     }
 
     return view;

@@ -11,12 +11,12 @@ public class Utils {
 
 
   /**
-   * Get Date as String from timestamp
+   * Get DateTime as String from timestamp
    */
-  public static String getDate(long timeStampInMillis) {
+  public static String getTimeDate(long timeStampInMillis) {
     calendar.setTimeInMillis(timeStampInMillis);
-    return getMonthAsString(calendar.get(Calendar.MONTH)) + " "
-        + calendar.get(Calendar.DAY_OF_MONTH) + ", " + calendar.get(Calendar.YEAR);
+    return calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + ", " +
+        getMonthAsString(calendar.get(Calendar.MONTH)) + " " + calendar.get(Calendar.DAY_OF_MONTH);
   }
 
   /**

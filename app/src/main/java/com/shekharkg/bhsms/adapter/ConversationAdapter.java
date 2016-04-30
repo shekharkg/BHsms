@@ -58,7 +58,7 @@ public class ConversationAdapter extends BaseAdapter {
     ViewHolder holder = (ViewHolder) view.getTag();
     holder.addressTV.setText(model.getAddress());
     holder.messageTV.setText(model.getLastMessage());
-    holder.timeStampTV.setText(Utils.getDate(model.getTimeStamp()));
+    holder.timeStampTV.setText(Utils.getTimeDate(model.getTimeStamp()));
     if (model.getIsInbox() == 1 && model.getReadStatus() == 0)
       holder.isRead.setVisibility(View.VISIBLE);
     else
